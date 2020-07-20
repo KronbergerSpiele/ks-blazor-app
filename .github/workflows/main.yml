@@ -9,17 +9,21 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/dotnet/core/sdk:3.1.302-focal
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           persist-credentials: false
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 3.1.302
       - name: Publish with dotnet
         run: dotnet publish --configuration Release --output build
+      - name: Prepare folder
+        run: |
+          cp deploy/index_gh.html build/wwwroot/index.html
+          cp deploy/404.html build/wwwroot/404.html
+          cp deploy/.nojekyll build/wwwroot/.nojekyll
+          ls build/wwwroot
       - name: Upload build
         uses: actions/upload-artifact@v1
         with:
